@@ -3,6 +3,7 @@ using UnityEngine.EventSystems;
 
 public class QuestTrigger : MonoBehaviour, IPointerClickHandler
 {
+    public int questID;
     [Tooltip("Drag your DialogueData asset here")]
     public DialogueData dialogueData;
 
@@ -27,7 +28,6 @@ public class QuestTrigger : MonoBehaviour, IPointerClickHandler
     // Optional: handle which choice the player picked
     private void OnChoiceSelected(int choiceIndex)
     {
-        Debug.Log($"Player chose option #{choiceIndex} on quest \"{dialogueData.name}\"");
-        // TODO: mark this quest as complete, reward XP, spawn next marker, etc.
+        QuestManager.Instance.CompleteQuest(questID);
     }
 }

@@ -31,17 +31,6 @@ public class DialogueManager : MonoBehaviour
     }
 
     public void ShowNextLine() {
-        // Debug logging to check null references
-        Debug.LogFormat("[DialogueManager] ShowNextLine() called. " +
-            "dialoguePanel={0}, portraitImage={1}, nameText={2}, dialogueText={3}, " +
-            "choicesContainer={4}, choiceButtonPrefab={5}",
-            dialoguePanel==null,
-            portraitImage==null,
-            nameText==null,
-            dialogueText==null,
-            choicesContainer==null,
-            choiceButtonPrefab==null
-        );
 
         if (linesQueue.Count == 0) {
             EndDialogue();
@@ -63,8 +52,8 @@ public class DialogueManager : MonoBehaviour
                 var btn = Instantiate(choiceButtonPrefab, choicesContainer);
                 btn.GetComponentInChildren<Text>().text = line.choices[i].text;
                 btn.onClick.AddListener(() => {
-                    EndDialogue();     // close UI or proceed as desired
                     onChoiceSelected?.Invoke(choiceIndex);
+                    ShowNextLine();
                 });
             }
         } else {
