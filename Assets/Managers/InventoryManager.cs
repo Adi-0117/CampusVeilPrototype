@@ -44,7 +44,7 @@ public class InventoryManager : MonoBehaviour
             var icon = slot.transform.Find("IconImage").GetComponent<UnityEngine.UI.Image>();
             icon.sprite = item.icon;
 
-            // Hook up the button to “Use” this item
+            // Hook up the button to "Use" this item
             slot.GetComponent<UnityEngine.UI.Button>()
                 .onClick.AddListener(() => OnUseItem(item));
         }
@@ -56,7 +56,13 @@ public class InventoryManager : MonoBehaviour
         // TODO: apply item effect (e.g., open locked door)
         RemoveItem(item);
     }
-        public void ToggleInventory()
+
+    public bool HasItem(ItemData item)
+    {
+        return items.Contains(item);
+    }
+
+    public void ToggleInventory()
     {
         bool isOpen = inventoryPanel.activeSelf;
         if (!isOpen)
