@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7466841298745457208}
   - component: {fileID: 1449790328886147166}
   - component: {fileID: 740904742356616594}
+  - component: {fileID: 648167177122193126}
   m_Layer: 0
   m_Name: markerPrefab
   m_TagString: Untagged
@@ -106,6 +107,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &648167177122193126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1101046176888382612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc2ae113713d83f45af125a0f7389476, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  questID: 0
+  dialogueData: {fileID: 11400000, guid: a24c985a62428e042a84153fefe34179, type: 2}
 --- !u!1 &8113238953995691167
 GameObject:
   m_ObjectHideFlags: 0

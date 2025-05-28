@@ -12,6 +12,10 @@ public class QuestManager : MonoBehaviour
 {
     public static QuestManager Instance { get; private set; }
 
+    [Header("Editor Testing")]
+    [Tooltip("When checked and running in the Editor, markers will spawn at mock positions instead of using GPS")]
+    public bool useEditorMode = false;
+
     [Header("Quests Configuration")]
     public List<QuestData> quests;         // fill in Inspector
     public TMP_Text debugText;    // assign in Inspector
@@ -48,7 +52,13 @@ public class QuestManager : MonoBehaviour
             return;
         }
 
-        // Spawn the next marker based on GPS coordinates
+        if (useEditorMode)
+        {
+            SpawnMockMarker(quests[currentQuestIndex]);
+            return;
+        }
+
+        // normal GPS flow on device:
         StartCoroutine(SpawnMarkerAtLocation(quests[currentQuestIndex]));
     }
 
@@ -67,26 +77,39 @@ public class QuestManager : MonoBehaviour
         }
         #endif
 
+        // Show status right away
+        if (debugText != null)
+            debugText.text = $"GPS enabled? {Input.location.isEnabledByUser}\n" +
+                            $"Status: {Input.location.status}";
+
         // --- NOW CHECK IF GPS IS ENABLED ---
         if (!Input.location.isEnabledByUser)
         {
             Debug.LogError("GPS not enabled on device");
             yield break;
         }
+
         Input.location.Start();
         int maxWait = 20;
         while (Input.location.status == LocationServiceStatus.Initializing && maxWait-- > 0)
+        {
+            if (debugText != null)
+                debugText.text = $"Waiting for GPS… ({maxWait}s)\nStatus: {Input.location.status}";
             yield return new WaitForSeconds(1);
+        }
 
         if (Input.location.status != LocationServiceStatus.Running)
         {
+            debugText.text = $"GPS failed to start: {Input.location.status}";
             Debug.LogError("Unable to start GPS");
             yield break;
         }
 
-        // 2) Get user GPS
+        // We have a lock!
         double userLat = Input.location.lastData.latitude;
         double userLon = Input.location.lastData.longitude;
+        if (debugText != null)
+            debugText.text = $"GPS Locked\nLat: {userLat:F6}\nLon: {userLon:F6}";
 
         // 3) Calculate meter offsets
         const double earthRadius = 6378137.0;
@@ -96,18 +119,25 @@ public class QuestManager : MonoBehaviour
         float northing = (float)(dLat * earthRadius);
         float easting = (float)(dLon * earthRadius * Mathf.Cos((float)latRad));
 
+        // Before creating the anchor:
+        if (debugText != null)
+            debugText.text += $"\nOffset E: {easting:F1}m, N: {northing:F1}m";
+
         // 4) Create AR anchor at that pose
         var pose = new Pose(new Vector3(easting, 0, northing), Quaternion.identity);
         var anchor = anchorManager.AddAnchor(pose);
         if (anchor == null)
         {
+            debugText.text += "\n❌ Anchor failed";
             Debug.LogError("Failed to create ARAnchor");
             yield break;
         }
+        debugText.text += "\n✅ Anchor created";
 
         // 5) Instantiate your marker prefab under that anchor
         var marker = Instantiate(markerPrefab, anchor.transform);
-        
+        debugText.text += $"\n✅ Marker spawned at {marker.transform.position}";
+
         // find the Label inside the prefab and update its text
         var label = marker.transform.Find("Label")?.GetComponent<TextMeshProUGUI>();
         if (label != null) label.text = data.questName;
@@ -122,9 +152,6 @@ public class QuestManager : MonoBehaviour
         // 6) Retarget the compass
         var compass = FindObjectOfType<CompassController>();
         if (compass != null) compass.target = marker.transform;
-
-        if (debugText != null)
-            debugText.text = $"Spawned {data.questName}\nPos: {marker.transform.position.x:F1}, {marker.transform.position.y:F1}, {marker.transform.position.z:F1}";
     }
 
     public void CompleteQuest(int questID)
@@ -158,5 +185,20 @@ public class QuestManager : MonoBehaviour
                 break;
             }
         }
+    }
+
+    private void SpawnMockMarker(QuestData data)
+    {
+        var marker = Instantiate(markerPrefab, data.editorSpawnPosition, Quaternion.identity);
+        var qt = marker.GetComponent<QuestTrigger>();
+        if (qt == null) qt = marker.AddComponent<QuestTrigger>();
+        if (marker.GetComponent<Collider>() == null) marker.AddComponent<BoxCollider>();
+
+        qt.dialogueData = data.dialogue;
+        qt.questID     = currentQuestIndex;
+
+        if (FindObjectOfType<CompassController>() is CompassController comp)
+            comp.target = marker.transform;
+        debugText.text = $"[Mock] Spawned '{data.questName}' at {data.editorSpawnPosition}";
     }
 }
