@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.UI;
@@ -17,8 +18,23 @@ public class QuestManager : MonoBehaviour
     public bool useEditorMode = false;
 
     [Header("Quests Configuration")]
-    public List<QuestData> quests;         // fill in Inspector
-    public TMP_Text debugText;    // assign in Inspector
+    [Tooltip("All QuestData assets in Assets/Data/Quests")]
+    public QuestData[] quests;
+
+#if UNITY_EDITOR
+    void OnValidate() {
+        // whenever you edit, auto-populate from the Quests folder
+        quests = UnityEditor.AssetDatabase
+            .FindAssets("t:QuestData", new[]{"Assets/Data/Quests"})
+            .Select(g => UnityEditor.AssetDatabase.LoadAssetAtPath<QuestData>(
+                UnityEditor.AssetDatabase.GUIDToAssetPath(g)))
+            .OrderBy(q => q.levelIndex)  // if you add a "levelIndex" field
+            .ToArray();
+    }
+#endif
+
+    [Header("UI")]
+    public Text debugText;    // assign in Inspector
     public GameObject markerPrefab;        // your portal prefab
 
     [Header("AR Components")]
@@ -46,7 +62,7 @@ public class QuestManager : MonoBehaviour
 
     void StartCurrentQuest()
     {
-        if (currentQuestIndex >= quests.Count)
+        if (currentQuestIndex >= quests.Length)
         {
             Debug.Log($"All quests done! Total XP: {playerXP}");
             return;
@@ -125,33 +141,45 @@ public class QuestManager : MonoBehaviour
 
         // 4) Create AR anchor at that pose
         var pose = new Pose(new Vector3(easting, 0, northing), Quaternion.identity);
-        var anchor = anchorManager.AddAnchor(pose);
-        if (anchor == null)
+        debugText.text += $"\nAttempting to anchor…";
+
+        ARAnchor anchor = anchorManager.AddAnchor(pose);
+        GameObject marker;
+
+        if (anchor != null)
         {
-            debugText.text += "\n❌ Anchor failed";
-            Debug.LogError("Failed to create ARAnchor");
-            yield break;
+            debugText.text += "\n✅ Anchor created";
+            marker = Instantiate(markerPrefab, anchor.transform);
         }
-        debugText.text += "\n✅ Anchor created";
+        else
+        {
+            debugText.text += "\n❌ Anchor failed — using fallback";
+            // Place marker relative to the camera instead:
+            Vector3 worldPos = Camera.main.transform.TransformPoint(pose.position);
+            marker = Instantiate(markerPrefab, worldPos, Quaternion.identity);
+        }
 
-        // 5) Instantiate your marker prefab under that anchor
-        var marker = Instantiate(markerPrefab, anchor.transform);
-        debugText.text += $"\n✅ Marker spawned at {marker.transform.position}";
-
-        // find the Label inside the prefab and update its text
-        var label = marker.transform.Find("Label")?.GetComponent<TextMeshProUGUI>();
-        if (label != null) label.text = data.questName;
-        // or if using legacy TextMesh:
-        var tm = marker.transform.Find("Label")?.GetComponent<TextMesh>();
-        if (tm != null) tm.text = data.questName;
-
+        // Now we have `marker` guaranteed:
         var qt = marker.GetComponent<QuestTrigger>();
         qt.dialogueData = data.dialogue;
         qt.questID     = currentQuestIndex;
 
-        // 6) Retarget the compass
+        // Retarget compass:
         var compass = FindObjectOfType<CompassController>();
-        if (compass != null) compass.target = marker.transform;
+        if (compass != null)
+            compass.target = marker.transform;
+
+        // Optional: label it so you can see it in-world
+        if (marker.transform.Find("Label") is Transform lbl)
+        {
+            var tmpro = lbl.GetComponent<TextMeshProUGUI>();
+            if (tmpro != null) tmpro.SetText(data.questName);
+            
+            var tm = lbl.GetComponent<TextMesh>();
+            if (tm != null) tm.text = data.questName;
+        }
+
+        debugText.text += $"\nMarker at {marker.transform.position}";
     }
 
     public void CompleteQuest(int questID)
@@ -177,7 +205,7 @@ public class QuestManager : MonoBehaviour
     public void OnPuzzleCompleted(PuzzleData data)
     {
         // Find the quest with this puzzle
-        for (int i = 0; i < quests.Count; i++)
+        for (int i = 0; i < quests.Length; i++)
         {
             if (quests[i].puzzleData == data)
             {
@@ -194,6 +222,7 @@ public class QuestManager : MonoBehaviour
         if (qt == null) qt = marker.AddComponent<QuestTrigger>();
         if (marker.GetComponent<Collider>() == null) marker.AddComponent<BoxCollider>();
 
+        qt.questData    = data;
         qt.dialogueData = data.dialogue;
         qt.questID     = currentQuestIndex;
 

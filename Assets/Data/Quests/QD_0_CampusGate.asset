@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e70e9b41454d2924da2c292e42b0b2ea, type: 3}
+  m_Name: QD_0_CampusGate
+  m_EditorClassIdentifier: 
+  levelIndex: 0
+  questName: Campus Gate
+  dialogue: {fileID: 0}
+  xpReward: 5
+  latitude: -27.4955
+  longitude: 153.0123
+  editorSpawnPosition: {x: 0, y: 0, z: -1}
+  puzzlePrefab: {fileID: 0}
+  puzzleData: {fileID: 0}

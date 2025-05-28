@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec60f2a2a72ebee43803fa243479cab3, type: 3}
+  m_Name: Item_StudentIDCard
+  m_EditorClassIdentifier: 
+  puzzleName: Item_StudentIDCard
+  instructions: "Use the library catalogue to search for \u201CIntroduction to AR\u201D
+    by title.\r\nOnce you find it, tap the book icon to confirm you\u2019ve located
+    it.\r\n\r\n"
+  requiredItem: {fileID: 0}
+  rewardItem: {fileID: 11400000, guid: 8fcf4459f3bdc944b90c235e9018dbed, type: 2}
+  xpReward: 5
