@@ -14,11 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelIndex: 1
   questName: First Steps, Hidden Veil
-  dialogue: {fileID: 0}
-  xpReward: 10
+  preDialogue: {fileID: 11400000, guid: a24c985a62428e042a84153fefe34179, type: 2}
+  postDialogue: {fileID: 11400000, guid: 62157b7ce39b6174cb7867ad01b54589, type: 2}
   latitude: 0
   longitude: 0
-  editorSpawnPosition: {x: 0, y: 0, z: 0}
+  editorSpawnPosition: {x: 2, y: 0, z: 2}
   puzzlePrefab: {fileID: 508295106390679726, guid: aa32fcecbbcaa3848bb89dec2d6caa5e,
     type: 3}
-  puzzleData: {fileID: 0}
+  puzzleData: {fileID: 11400000, guid: 3c788d26bc19b914b8f8c25cc2826065, type: 2}
+  rewardItem: {fileID: 11400000, guid: 8fcf4459f3bdc944b90c235e9018dbed, type: 2}
+  xpReward: 10

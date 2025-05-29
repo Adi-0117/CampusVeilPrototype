@@ -14,12 +14,16 @@ public class DialogueManager : MonoBehaviour
     public Transform choicesContainer;
     public Button choiceButtonPrefab;
 
+    private Button panelButton;
     private Queue<DialogueLine> linesQueue;
     private System.Action<int> onChoiceSelected;
 
     void Awake() {
         linesQueue = new Queue<DialogueLine>();
         dialoguePanel.SetActive(false);
+
+        // cache the Button on the panel for listener cleanup
+        panelButton = dialoguePanel.GetComponent<Button>();
     }
 
     public void StartDialogue(DialogueData data, System.Action<int> choiceCallback = null) {
@@ -31,7 +35,6 @@ public class DialogueManager : MonoBehaviour
     }
 
     public void ShowNextLine() {
-
         if (linesQueue.Count == 0) {
             EndDialogue();
             return;
@@ -58,13 +61,22 @@ public class DialogueManager : MonoBehaviour
             }
         } else {
             // no choices → clicking the panel advances
-            dialoguePanel.GetComponent<Button>().onClick.RemoveAllListeners();
-            dialoguePanel.GetComponent<Button>()
-                         .onClick.AddListener(ShowNextLine);
+            panelButton.onClick.RemoveAllListeners();
+            panelButton.onClick.AddListener(ShowNextLine);
         }
     }
 
-    void EndDialogue() {
+    void EndDialogue()
+    {
+        Debug.Log("[DialogueManager] EndDialogue() called — invoking onChoiceSelected");
+        onChoiceSelected?.Invoke(0);
+        onChoiceSelected = null;
+
+        // only remove listeners if the panel really has a Button component
+        var panelBtn = dialoguePanel.GetComponent<UnityEngine.UI.Button>();
+        if (panelBtn != null)
+            panelBtn.onClick.RemoveAllListeners();
+
         dialoguePanel.SetActive(false);
     }
 }

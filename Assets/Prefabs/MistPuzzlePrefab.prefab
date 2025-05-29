@@ -11,14 +11,14 @@ GameObject:
   - component: {fileID: 799600665309201465}
   - component: {fileID: 2165257357385659944}
   - component: {fileID: 7432599780782946966}
-  - component: {fileID: -4523924695151971083}
+  - component: {fileID: 1113895299146651212}
   m_Layer: 5
   m_Name: MistPuzzlePrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &799600665309201465
 RectTransform:
   m_ObjectHideFlags: 0
@@ -31,7 +31,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3561131968825388968}
+  - {fileID: 6511062492876463187}
   m_Father: {fileID: 0}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -78,7 +78,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &-4523924695151971083
+--- !u!114 &1113895299146651212
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -87,11 +87,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 508295106390679726}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e7262d85452cb04e993efa7d1ce19ef, type: 3}
+  m_Script: {fileID: 11500000, guid: 87b9e2fc395d1f040bdc739e121fa9d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mistPanel: {fileID: 508295106390679726}
---- !u!1 &6599638440121538783
+  tapsToClear: 10
+  mistImage: {fileID: 1764949594672020694}
+--- !u!1 &2814500240290928826
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -99,23 +100,23 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3561131968825388968}
-  - component: {fileID: 2232423284522117532}
-  - component: {fileID: 7243693328027323141}
+  - component: {fileID: 6511062492876463187}
+  - component: {fileID: 5331651698130082421}
+  - component: {fileID: 1764949594672020694}
   m_Layer: 5
-  m_Name: RawImage
+  m_Name: Mist
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &3561131968825388968
+--- !u!224 &6511062492876463187
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6599638440121538783}
+  m_GameObject: {fileID: 2814500240290928826}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -129,24 +130,24 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &2232423284522117532
+--- !u!222 &5331651698130082421
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6599638440121538783}
+  m_GameObject: {fileID: 2814500240290928826}
   m_CullTransparentMesh: 1
---- !u!114 &7243693328027323141
+--- !u!114 &1764949594672020694
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6599638440121538783}
+  m_GameObject: {fileID: 2814500240290928826}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
@@ -157,10 +158,13 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 0}
-  m_UVRect:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
+  m_Sprite: {fileID: 21300000, guid: 4aee60c2502691a4f80d6608330a2640, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1

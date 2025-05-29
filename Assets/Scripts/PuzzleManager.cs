@@ -13,44 +13,76 @@ public class PuzzleManager : MonoBehaviour
     public Button solveButton;
     public Button cancelButton;
 
-    private PuzzleData currentPuzzle;
+    // Where we'll parent the puzzle prefab
+    [Tooltip("Container under the panel to host the instantiated puzzle")]
+    public Transform puzzleContent;
 
-    void Awake() {
+    private PuzzleData currentPuzzle;
+    private System.Action onPuzzleSolvedCallback;
+
+    void Awake()
+    {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        // hook up cancel
-        cancelButton.onClick.AddListener(() => puzzlePanel.SetActive(false));
+        // clear & hide
+        cancelButton.onClick.AddListener(() => ClosePuzzle());
     }
 
-    public void StartPuzzle(PuzzleData data) {
+    public void StartPuzzle(PuzzleData data, System.Action onSolved)
+    {
+        Debug.Log($"[PuzzleManager] Starting puzzle \"{data.puzzleName}\" → prefab = {data.puzzlePrefab?.name ?? "null"}");
+        Debug.Log($"[PuzzleManager] puzzleContent = {puzzleContent?.name ?? "null"} (childCount={puzzleContent?.childCount ?? 0})");
+
         currentPuzzle = data;
+        onPuzzleSolvedCallback = onSolved;
         puzzleTitle.text = data.puzzleName;
         puzzleInstructions.text = data.instructions;
 
-        // check item requirement
-        if (data.requiredItem != null &&
-            !InventoryManager.Instance.HasItem(data.requiredItem)) {
-            solveButton.interactable = false;
-        } else {
-            solveButton.interactable = true;
+        // clear old content
+        foreach (Transform t in puzzleContent)
+            Destroy(t.gameObject);
+
+        // spawn the right puzzle prefab
+        if (data.puzzlePrefab != null)
+        {
+            Instantiate(data.puzzlePrefab, puzzleContent);
         }
 
-        // hook up solve
+        // set Solve button (we'll enable it only when the puzzle script tells us it's solved)
+        solveButton.gameObject.SetActive(false);
         solveButton.onClick.RemoveAllListeners();
         solveButton.onClick.AddListener(CompletePuzzle);
 
         puzzlePanel.SetActive(true);
     }
 
-    void CompletePuzzle() {
-        // award XP
-        QuestManager.Instance.AddXP(currentPuzzle.xpReward);
-        Debug.Log($"Puzzle “{currentPuzzle.puzzleName}” solved! +{currentPuzzle.xpReward} XP");
-        puzzlePanel.SetActive(false);
+    // Called by your puzzle script when the puzzle is solved
+    public void OnPuzzleSolved()
+    {
+        solveButton.gameObject.SetActive(true);
+    }
 
-        // signal QuestManager or next step
-        QuestManager.Instance.OnPuzzleCompleted(currentPuzzle);
+    void CompletePuzzle()
+    {
+        // award puzzle XP
+        if (currentPuzzle != null)
+        {
+            QuestManager.Instance.AddXP(currentPuzzle.xpReward);
+            Debug.Log($"[PuzzleManager] \"{currentPuzzle.puzzleName}\" solved! +{currentPuzzle.xpReward} XP");
+        }
+
+        onPuzzleSolvedCallback?.Invoke();
+        ClosePuzzle();
+    }
+
+    void ClosePuzzle()
+    {
+        // clear content
+        foreach (Transform t in puzzleContent)
+            Destroy(t.gameObject);
+
+        puzzlePanel.SetActive(false);
     }
 }

@@ -13,6 +13,17 @@ public class QuestManager : MonoBehaviour
 {
     public static QuestManager Instance { get; private set; }
 
+    // Track both the anchor and the marker separately
+    private GameObject _currentAnchorGO;
+    private GameObject _currentMarkerGO;
+
+    // Cache compass reference
+    private CompassController cachedCompass;
+
+    [Header("Story")]
+    [Tooltip("Runs before any quest spawns")]
+    public DialogueData introDialogue;
+
     [Header("Editor Testing")]
     [Tooltip("When checked and running in the Editor, markers will spawn at mock positions instead of using GPS")]
     public bool useEditorMode = false;
@@ -34,7 +45,6 @@ public class QuestManager : MonoBehaviour
 #endif
 
     [Header("UI")]
-    public Text debugText;    // assign in Inspector
     public GameObject markerPrefab;        // your portal prefab
 
     [Header("AR Components")]
@@ -53,11 +63,23 @@ public class QuestManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        // Cache the compass so we don't call FindObjectOfType each spawn
+        cachedCompass = FindObjectOfType<CompassController>();
     }
 
     void Start()
     {
-        StartCurrentQuest();
+        // 1) show the intro, then kick off the first quest
+        if (introDialogue != null)
+        {
+            FindObjectOfType<DialogueManager>()
+                .StartDialogue(introDialogue, _ => StartCurrentQuest());
+        }
+        else
+        {
+            StartCurrentQuest();
+        }
     }
 
     void StartCurrentQuest()
@@ -93,12 +115,7 @@ public class QuestManager : MonoBehaviour
         }
         #endif
 
-        // Show status right away
-        if (debugText != null)
-            debugText.text = $"GPS enabled? {Input.location.isEnabledByUser}\n" +
-                            $"Status: {Input.location.status}";
-
-        // --- NOW CHECK IF GPS IS ENABLED ---
+        // --- CHECK IF GPS IS ENABLED ---
         if (!Input.location.isEnabledByUser)
         {
             Debug.LogError("GPS not enabled on device");
@@ -109,14 +126,11 @@ public class QuestManager : MonoBehaviour
         int maxWait = 20;
         while (Input.location.status == LocationServiceStatus.Initializing && maxWait-- > 0)
         {
-            if (debugText != null)
-                debugText.text = $"Waiting for GPS… ({maxWait}s)\nStatus: {Input.location.status}";
             yield return new WaitForSeconds(1);
         }
 
         if (Input.location.status != LocationServiceStatus.Running)
         {
-            debugText.text = $"GPS failed to start: {Input.location.status}";
             Debug.LogError("Unable to start GPS");
             yield break;
         }
@@ -124,10 +138,8 @@ public class QuestManager : MonoBehaviour
         // We have a lock!
         double userLat = Input.location.lastData.latitude;
         double userLon = Input.location.lastData.longitude;
-        if (debugText != null)
-            debugText.text = $"GPS Locked\nLat: {userLat:F6}\nLon: {userLon:F6}";
 
-        // 3) Calculate meter offsets
+        // Calculate meter offsets
         const double earthRadius = 6378137.0;
         double dLat = (data.latitude - userLat) * Mathf.Deg2Rad;
         double dLon = (data.longitude - userLon) * Mathf.Deg2Rad;
@@ -135,39 +147,40 @@ public class QuestManager : MonoBehaviour
         float northing = (float)(dLat * earthRadius);
         float easting = (float)(dLon * earthRadius * Mathf.Cos((float)latRad));
 
-        // Before creating the anchor:
-        if (debugText != null)
-            debugText.text += $"\nOffset E: {easting:F1}m, N: {northing:F1}m";
-
-        // 4) Create AR anchor at that pose
+        // Create AR anchor at that pose
         var pose = new Pose(new Vector3(easting, 0, northing), Quaternion.identity);
-        debugText.text += $"\nAttempting to anchor…";
 
-        ARAnchor anchor = anchorManager.AddAnchor(pose);
+        // Create anchor using newer API
+        var anchorGO = new GameObject("ARAnchor");
+        anchorGO.transform.SetPositionAndRotation(pose.position, pose.rotation);
+        var anchor = anchorGO.AddComponent<ARAnchor>();
         GameObject marker;
 
         if (anchor != null)
         {
-            debugText.text += "\n✅ Anchor created";
-            marker = Instantiate(markerPrefab, anchor.transform);
+            _currentAnchorGO = anchorGO;
+            marker = Instantiate(markerPrefab);
+            marker.transform.SetParent(anchorGO.transform, worldPositionStays: false);
+            _currentMarkerGO = marker;
         }
         else
         {
-            debugText.text += "\n❌ Anchor failed — using fallback";
+            Destroy(anchorGO);  // Clean up failed anchor GameObject
             // Place marker relative to the camera instead:
             Vector3 worldPos = Camera.main.transform.TransformPoint(pose.position);
             marker = Instantiate(markerPrefab, worldPos, Quaternion.identity);
+            _currentMarkerGO = marker;  // In fallback, marker is its own anchor
+            _currentAnchorGO = marker;
         }
 
         // Now we have `marker` guaranteed:
         var qt = marker.GetComponent<QuestTrigger>();
-        qt.dialogueData = data.dialogue;
-        qt.questID     = currentQuestIndex;
+        qt.questData = data;  // Assign the full QuestData asset
+        qt.questID = currentQuestIndex;
 
-        // Retarget compass:
-        var compass = FindObjectOfType<CompassController>();
-        if (compass != null)
-            compass.target = marker.transform;
+        // Retarget compass using cached reference
+        if (cachedCompass != null)
+            cachedCompass.target = marker.transform;
 
         // Optional: label it so you can see it in-world
         if (marker.transform.Find("Label") is Transform lbl)
@@ -178,19 +191,59 @@ public class QuestManager : MonoBehaviour
             var tm = lbl.GetComponent<TextMesh>();
             if (tm != null) tm.text = data.questName;
         }
-
-        debugText.text += $"\nMarker at {marker.transform.position}";
     }
 
     public void CompleteQuest(int questID)
     {
-        if (questID != currentQuestIndex) return;
+        if (questID != currentQuestIndex)
+        {
+            Debug.Log($"[QuestManager] Ignoring CompleteQuest({questID}), currentQuestIndex={currentQuestIndex}");
+            return;
+        }
 
-        // Award XP
+        Debug.Log($"[QuestManager] Completing quest {questID} (\"{quests[questID].questName}\")");
+
+        // 1) Destroy the marker first (if it exists)
+        if (_currentMarkerGO != null)
+        {
+            Debug.Log($"[QuestManager] Destroying marker: {_currentMarkerGO.name}");
+            Destroy(_currentMarkerGO);
+            _currentMarkerGO = null;
+        }
+        // Then destroy the anchor if it's separate from the marker
+        else if (_currentAnchorGO != null)
+        {
+            Debug.Log($"[QuestManager] Destroying anchor: {_currentAnchorGO.name}");
+            Destroy(_currentAnchorGO);
+            _currentAnchorGO = null;
+        }
+        else
+        {
+            Debug.LogWarning("[QuestManager] No marker or anchor to destroy!");
+        }
+
+        // 2) Award XP
         playerXP += quests[questID].xpReward;
-        // Debug.Log($"Quest "{quests[questID].questName}" complete! +{quests[questID].xpReward} XP (Total: {playerXP})");
+        Debug.Log($"[QuestManager] +{quests[questID].xpReward} XP → total {playerXP}");
 
-        // Advance to the next quest
+        // 3) Award the item (if you have one)
+        var reward = quests[questID].rewardItem;
+        Debug.Log($"[QuestManager] Quest {questID} rewardItem = {reward?.name ?? "null"}");
+
+        if (reward != null)
+        {
+            if (InventoryManager.Instance != null)
+            {
+                InventoryManager.Instance.AddItem(reward);
+                Debug.Log($"[QuestManager] Awarded item: {reward.itemName}");
+            }
+            else
+            {
+                Debug.LogWarning("[QuestManager] No InventoryManager found in scene!");
+            }
+        }
+
+        // 4) Advance to next quest
         currentQuestIndex++;
         StartCurrentQuest();
     }
@@ -218,16 +271,22 @@ public class QuestManager : MonoBehaviour
     private void SpawnMockMarker(QuestData data)
     {
         var marker = Instantiate(markerPrefab, data.editorSpawnPosition, Quaternion.identity);
+
+        // Track the marker (which is its own anchor in mock mode)
+        _currentMarkerGO = marker;
+        _currentAnchorGO = marker;
+
         var qt = marker.GetComponent<QuestTrigger>();
         if (qt == null) qt = marker.AddComponent<QuestTrigger>();
         if (marker.GetComponent<Collider>() == null) marker.AddComponent<BoxCollider>();
 
-        qt.questData    = data;
-        qt.dialogueData = data.dialogue;
-        qt.questID     = currentQuestIndex;
+        qt.questData = data;  // Assign the full QuestData asset
+        qt.questID = currentQuestIndex;
 
-        if (FindObjectOfType<CompassController>() is CompassController comp)
-            comp.target = marker.transform;
-        debugText.text = $"[Mock] Spawned '{data.questName}' at {data.editorSpawnPosition}";
+        // Use cached compass reference
+        if (cachedCompass != null)
+            cachedCompass.target = marker.transform;
+
+        Debug.Log($"[QuestManager] [Mock] Spawned '{data.questName}' marker at {data.editorSpawnPosition}");
     }
 }

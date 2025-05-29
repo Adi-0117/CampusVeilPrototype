@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e70e9b41454d2924da2c292e42b0b2ea, type: 3}
+  m_Name: QD_2_Library
+  m_EditorClassIdentifier: 
+  levelIndex: 2
+  questName: The Fogged Archive
+  preDialogue: {fileID: 11400000, guid: ee5d32e65fcb6a640a1e52117a41c778, type: 2}
+  postDialogue: {fileID: 11400000, guid: 2e06332c26c133c46932ef22a66d9f87, type: 2}
+  latitude: 0
+  longitude: 0
+  editorSpawnPosition: {x: 1, y: 0, z: -3}
+  puzzlePrefab: {fileID: 508295106390679726, guid: ac63342142bc3494784f00c38f1f3354,
+    type: 3}
+  puzzleData: {fileID: 11400000, guid: eacc099944a40a541952c77c80837807, type: 2}
+  rewardItem: {fileID: 11400000, guid: d4e36f55af769044892b9783cdb8505c, type: 2}
+  xpReward: 10

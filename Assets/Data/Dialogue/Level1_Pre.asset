@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3871a2c165dbbcd45a23ebba61aae41c, type: 3}
+  m_Name: Level1_Pre
+  m_EditorClassIdentifier: 
+  lines:
+  - speakerName: Aeron
+    portrait: {fileID: 21300000, guid: afded5d526fb27a429f24429e1ca543c, type: 3}
+    text: "Wow, this place is so busy\u2026 is this the Student Centre?"
+    choices: []
+  - speakerName: You
+    portrait: {fileID: 21300000, guid: 086ed30d6dcebce4884ece2ffe5387e9, type: 3}
+    text: Yep! This is where everyone gets their ID, sorts enrolment, or finds help.
+    choices: []
+  - speakerName: 
+    portrait: {fileID: 21300000, guid: 086ed30d6dcebce4884ece2ffe5387e9, type: 3}
+    text: (As you approach, a shimmering mist blocks the doorway.)
+    choices: []
+  - speakerName: Aeron
+    portrait: {fileID: 21300000, guid: afded5d526fb27a429f24429e1ca543c, type: 3}
+    text: "This mist\u2026 it feels so familiar, yet so wrong\u2026"
+    choices: []
+  - speakerName: You
+    portrait: {fileID: 21300000, guid: 086ed30d6dcebce4884ece2ffe5387e9, type: 3}
+    text: "Relax, it\u2019s probably just some fog. Let\u2019s clear it out."
+    choices: []

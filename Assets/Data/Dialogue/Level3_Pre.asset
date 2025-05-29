@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3871a2c165dbbcd45a23ebba61aae41c, type: 3}
+  m_Name: Level3_Pre
+  m_EditorClassIdentifier: 
+  lines:
+  - speakerName: You
+    portrait: {fileID: 21300000, guid: 086ed30d6dcebce4884ece2ffe5387e9, type: 3}
+    text: "Hungry? Let\u2019s check out the canteen\u2014best spot to meet people
+      and grab food."
+    choices: []
+  - speakerName: Aeron
+    portrait: {fileID: 21300000, guid: afded5d526fb27a429f24429e1ca543c, type: 3}
+    text: Honestly, yes. I could eat a horse.
+    choices: []
+  - speakerName: 
+    portrait: {fileID: 21300000, guid: 086ed30d6dcebce4884ece2ffe5387e9, type: 3}
+    text: (A glowing magical barrier blocks the entrance. A floating info board appears
+      with a riddle.)
+    choices: []
+  - speakerName: Aeron
+    portrait: {fileID: 21300000, guid: afded5d526fb27a429f24429e1ca543c, type: 3}
+    text: Uh, is it just me or is lunch time extra weird today?
+    choices: []
+  - speakerName: You
+    portrait: {fileID: 21300000, guid: 086ed30d6dcebce4884ece2ffe5387e9, type: 3}
+    text: "Looks like magic is messing with more than just our classes. Let\u2019s
+      see what\u2019s up."
+    choices: []

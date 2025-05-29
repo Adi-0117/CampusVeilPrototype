@@ -1,27 +1,30 @@
 using UnityEngine;
-[CreateAssetMenu(fileName = "QuestData_", menuName = "CampusVeil/QuestData", order = 1)]
 
+[CreateAssetMenu(fileName = "QuestData_", menuName = "CampusVeil/QuestData", order = 1)]
 [System.Serializable]
-public class QuestData: ScriptableObject {
+public class QuestData : ScriptableObject
+{
     [Tooltip("Order in which this quest appears (lower numbers first)")]
     public int levelIndex;
     public string questName;
-    public DialogueData dialogue;       
-    public int xpReward = 10;          
+
+    [Header("Dialogues")]
+    public DialogueData preDialogue;   // before puzzle
+    public DialogueData postDialogue;  // after puzzle
+
     [Header("Real-World Location")]
-    [Tooltip("Latitude of this building")]
     public double latitude;
-    [Tooltip("Longitude of this building")]
     public double longitude;
 
     [Header("Mock-Spawn (all platforms)")]
-    [Tooltip("When Use Editor Mode is checked, marker will appear here")]
     public Vector3 editorSpawnPosition = Vector3.zero;
 
     [Header("Puzzle (Level)")]
-    [Tooltip("Prefab that implements this level's AR puzzle")]
     public GameObject puzzlePrefab;
-    public PuzzleData puzzleData;    
-      // the PuzzleData asset to trigger after dialogue
+    public PuzzleData puzzleData;
+
+    [Header("Rewards")]
+    [Tooltip("Optional: prefab of the item to give when this quest completes")]
+    public ItemData rewardItem;
+    public int xpReward = 10;
 }
-    

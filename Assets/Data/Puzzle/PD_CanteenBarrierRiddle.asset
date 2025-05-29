@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec60f2a2a72ebee43803fa243479cab3, type: 3}
+  m_Name: PD_CanteenBarrierRiddle
+  m_EditorClassIdentifier: 
+  puzzleName: Enchanted Barrier Riddle
+  instructions: "You\u2019re running late for class\u2026 What\u2019s the best way
+    to quickly get from one end to the other?\u201D<br/>A) Take the university shuttle
+    bus<br/>B) Walk all the way<br/>C) Teleport (if only!)"
+  requiredItem: {fileID: 11400000, guid: d4e36f55af769044892b9783cdb8505c, type: 2}
+  puzzlePrefab: {fileID: 508295106390679726, guid: 4b18e5d5b4d5cec4ab4c91d3f234e645,
+    type: 3}
+  rewardItem: {fileID: 11400000, guid: 2a9013818a0815449bf029926304434e, type: 2}
+  xpReward: 20

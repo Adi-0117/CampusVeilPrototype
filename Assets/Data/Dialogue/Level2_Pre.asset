@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3871a2c165dbbcd45a23ebba61aae41c, type: 3}
+  m_Name: Level2_Pre
+  m_EditorClassIdentifier: 
+  lines:
+  - speakerName: You
+    portrait: {fileID: 21300000, guid: 086ed30d6dcebce4884ece2ffe5387e9, type: 3}
+    text: Next stop, the library. You can study, borrow books, or get academic help
+      here
+    choices: []
+  - speakerName: Aeron
+    portrait: {fileID: 21300000, guid: afded5d526fb27a429f24429e1ca543c, type: 3}
+    text: "I hope there\u2019s a quiet spot for me\u2026"
+    choices: []
+  - speakerName: 
+    portrait: {fileID: 21300000, guid: 086ed30d6dcebce4884ece2ffe5387e9, type: 3}
+    text: (A swirling magical fog covers the entrance. A few runes float in the air.)
+    choices: []
+  - speakerName: Aeron
+    portrait: {fileID: 21300000, guid: afded5d526fb27a429f24429e1ca543c, type: 3}
+    text: "That\u2019s\u2026 definitely not normal. Maybe we should turn back?"
+    choices: []
+  - speakerName: You
+    portrait: {fileID: 21300000, guid: 086ed30d6dcebce4884ece2ffe5387e9, type: 3}
+    text: "Nah, let\u2019s figure this out together."
+    choices: []
