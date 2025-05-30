@@ -1,3 +1,5 @@
+// VFXManager.cs
+// Singleton to manage visual effects across scenes.
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

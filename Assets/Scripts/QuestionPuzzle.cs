@@ -1,15 +1,15 @@
+// QuestionPuzzle.cs
+// Multiple-choice puzzle that colors buttons and signals completion on correct answer.
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class QuestionPuzzle : MonoBehaviour
 {
-    [Tooltip("Buttons for each answer")]
     public Button[] answerButtons;
-    [Tooltip("Index of the correct button")]
     public int correctIndex = 0;
     public Color correctColor = Color.green;
-    public Color wrongColor   = Color.red;
+    public Color wrongColor = Color.red;
 
     void Start()
     {

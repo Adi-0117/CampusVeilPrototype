@@ -1,3 +1,5 @@
+// SceneController.cs
+// Provides singleton methods to load, reload or advance scenes by build index.
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,7 +9,6 @@ public class SceneController : MonoBehaviour
 
     private void Awake()
     {
-        // Singleton setup
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -17,26 +18,17 @@ public class SceneController : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    /// <summary>
-    /// Loads a new scene by name.
-    /// </summary>
     public void LoadScene(string sceneName)
     {
         SceneManager.LoadScene(sceneName);
     }
 
-    /// <summary>
-    /// Reloads the currently active scene.
-    /// </summary>
     public void ReloadCurrentScene()
     {
         string current = SceneManager.GetActiveScene().name;
         SceneManager.LoadScene(current);
     }
 
-    /// <summary>
-    /// Loads the next scene in build settings order.
-    /// </summary>
     public void LoadNextScene()
     {
         int nextIndex = SceneManager.GetActiveScene().buildIndex + 1;

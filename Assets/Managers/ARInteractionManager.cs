@@ -1,3 +1,5 @@
+// ARInteractionManager.cs
+// Singleton to manage AR interaction lifecycle and persist across scenes.
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

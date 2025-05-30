@@ -1,8 +1,9 @@
-using UnityEngine;
-using UnityEngine.UI;
-using System.Collections;
+// DialogueManager.cs
+// Handles displaying dialogue lines, portraits, names and spawning choice buttons.
 using System.Collections.Generic;
 using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class DialogueManager : MonoBehaviour
 {
@@ -18,24 +19,27 @@ public class DialogueManager : MonoBehaviour
     private Queue<DialogueLine> linesQueue;
     private System.Action<int> onChoiceSelected;
 
-    void Awake() {
+    void Awake()
+    {
         linesQueue = new Queue<DialogueLine>();
         dialoguePanel.SetActive(false);
-
-        // cache the Button on the panel for listener cleanup
         panelButton = dialoguePanel.GetComponent<Button>();
     }
 
-    public void StartDialogue(DialogueData data, System.Action<int> choiceCallback = null) {
+    public void StartDialogue(DialogueData data, System.Action<int> choiceCallback = null)
+    {
         onChoiceSelected = choiceCallback;
         dialoguePanel.SetActive(true);
         linesQueue.Clear();
-        foreach (var line in data.lines) linesQueue.Enqueue(line);
+        foreach (var line in data.lines)
+            linesQueue.Enqueue(line);
         ShowNextLine();
     }
 
-    public void ShowNextLine() {
-        if (linesQueue.Count == 0) {
+    public void ShowNextLine()
+    {
+        if (linesQueue.Count == 0)
+        {
             EndDialogue();
             return;
         }
@@ -45,22 +49,25 @@ public class DialogueManager : MonoBehaviour
         nameText.text = line.speakerName;
         dialogueText.text = line.text;
 
-        // clear old choices
-        foreach (Transform t in choicesContainer) Destroy(t.gameObject);
+        foreach (Transform t in choicesContainer)
+            Destroy(t.gameObject);
 
-        if (line.choices != null && line.choices.Length > 0) {
-            // spawn choice buttons
-            for (int i = 0; i < line.choices.Length; i++) {
+        if (line.choices != null && line.choices.Length > 0)
+        {
+            for (int i = 0; i < line.choices.Length; i++)
+            {
                 int choiceIndex = i;
                 var btn = Instantiate(choiceButtonPrefab, choicesContainer);
                 btn.GetComponentInChildren<Text>().text = line.choices[i].text;
-                btn.onClick.AddListener(() => {
+                btn.onClick.AddListener(() =>
+                {
                     onChoiceSelected?.Invoke(choiceIndex);
                     ShowNextLine();
                 });
             }
-        } else {
-            // no choices → clicking the panel advances
+        }
+        else
+        {
             panelButton.onClick.RemoveAllListeners();
             panelButton.onClick.AddListener(ShowNextLine);
         }
@@ -68,12 +75,10 @@ public class DialogueManager : MonoBehaviour
 
     void EndDialogue()
     {
-        Debug.Log("[DialogueManager] EndDialogue() called — invoking onChoiceSelected");
         onChoiceSelected?.Invoke(0);
         onChoiceSelected = null;
 
-        // only remove listeners if the panel really has a Button component
-        var panelBtn = dialoguePanel.GetComponent<UnityEngine.UI.Button>();
+        var panelBtn = dialoguePanel.GetComponent<Button>();
         if (panelBtn != null)
             panelBtn.onClick.RemoveAllListeners();
 

@@ -1,14 +1,12 @@
+// QuestTrigger.cs
+// Responds to marker clicks by running pre-dialogue, puzzles, post-dialogue, and quest completion.
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class QuestTrigger : MonoBehaviour, IPointerClickHandler
 {
-    [Tooltip("Drag in the QuestData asset for this marker")]
     public QuestData questData;
-
-    [Tooltip("Set by QuestManager when spawning")]
     public int questID;
-
     private DialogueManager dialogueManager;
 
     void Start()
@@ -26,28 +24,17 @@ public class QuestTrigger : MonoBehaviour, IPointerClickHandler
     void RunPreDialogue()
     {
         if (questData.preDialogue != null)
-        {
-            dialogueManager.StartDialogue(
-                questData.preDialogue,
-                choiceIndex => AfterPreDialogue()
-            );
-        }
-        else AfterPreDialogue();
+            dialogueManager.StartDialogue(questData.preDialogue, _ => AfterPreDialogue());
+        else
+            AfterPreDialogue();
     }
 
     void AfterPreDialogue()
     {
         if (questData.puzzleData != null)
-        {
-            PuzzleManager.Instance.StartPuzzle(
-                questData.puzzleData,
-                OnPuzzleSolved
-            );
-        }
+            PuzzleManager.Instance.StartPuzzle(questData.puzzleData, OnPuzzleSolved);
         else
-        {
             RunPostDialogue();
-        }
     }
 
     void OnPuzzleSolved()
@@ -58,13 +45,9 @@ public class QuestTrigger : MonoBehaviour, IPointerClickHandler
     void RunPostDialogue()
     {
         if (questData.postDialogue != null)
-        {
-            dialogueManager.StartDialogue(
-                questData.postDialogue,
-                choiceIndex => CompleteThisQuest()
-            );
-        }
-        else CompleteThisQuest();
+            dialogueManager.StartDialogue(questData.postDialogue, _ => CompleteThisQuest());
+        else
+            CompleteThisQuest();
     }
 
     void CompleteThisQuest()

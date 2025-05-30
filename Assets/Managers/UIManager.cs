@@ -1,3 +1,5 @@
+// UIManager.cs
+// Handles UI panel toggles and starting/continuing the game scene.
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,26 +9,33 @@ public class UIManager : MonoBehaviour
     public GameObject inventoryPanel;
     public GameObject settingsPanel;
 
-    public void StartGame() {
+    public void StartGame()
+    {
         SceneManager.LoadScene("ARPlayground");
     }
 
-    public void ContinueGame() {
-        // TODO: load saved state here
+    public void ContinueGame()
+    {
         SceneManager.LoadScene("ARPlayground");
     }
 
-    public void OpenInventory() {
+    public void OpenInventory()
+    {
         inventoryPanel.SetActive(true);
     }
-    public void CloseInventory() {
+
+    public void CloseInventory()
+    {
         inventoryPanel.SetActive(false);
     }
 
-    public void OpenSettings() {
+    public void OpenSettings()
+    {
         settingsPanel.SetActive(true);
     }
-    public void CloseSettings() {
+
+    public void CloseSettings()
+    {
         settingsPanel.SetActive(false);
     }
 }

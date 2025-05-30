@@ -1,14 +1,14 @@
+// RunesPuzzle.cs
+// Rune-activation puzzle that completes when all runes have been clicked/glow.
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class RunesPuzzle : MonoBehaviour, IPointerClickHandler
 {
-    [Tooltip("Image component that shows the glowing state")]
     public Image runeImage;
     public Sprite defaultSprite;
     public Sprite glowingSprite;
-
     private bool isGlowing;
 
     void Start()
@@ -21,14 +21,13 @@ public class RunesPuzzle : MonoBehaviour, IPointerClickHandler
         isGlowing = true;
         runeImage.sprite = glowingSprite;
 
-        // check siblings
         foreach (Transform sibling in transform.parent)
         {
             var rp = sibling.GetComponent<RunesPuzzle>();
-            if (rp != null && !rp.isGlowing) return;
+            if (rp != null && !rp.isGlowing)
+                return;
         }
 
-        // all runes glowing
         PuzzleManager.Instance.OnPuzzleSolved();
     }
 }

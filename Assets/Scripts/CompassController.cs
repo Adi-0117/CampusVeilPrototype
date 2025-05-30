@@ -1,15 +1,16 @@
+// CompassController.cs
+// Rotates a UI arrow and updates distance text to point toward a designated target.
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class CompassController : MonoBehaviour
 {
-    [Tooltip("The UI arrow that will rotate")]
     public RectTransform arrow;
-    [Tooltip("UI Text to display distance")]
     public TMP_Text distanceText;
-    [Tooltip("Transform of the target, e.g. the current quest marker")]
-    [HideInInspector] public Transform target;
+
+    [HideInInspector]
+    public Transform target;
     private Transform playerCam;
 
     void Start()
@@ -19,15 +20,14 @@ public class CompassController : MonoBehaviour
 
     void Update()
     {
-        if (target == null) return;
+        if (target == null)
+            return;
 
-        // 1) Rotate arrow to face target horizontally
-        Vector3 dir = (target.position - playerCam.position);
-        dir.y = 0; // ignore vertical
+        Vector3 dir = target.position - playerCam.position;
+        dir.y = 0;
         float angle = Vector3.SignedAngle(playerCam.forward, dir, Vector3.up);
         arrow.localEulerAngles = new Vector3(0, 0, -angle);
 
-        // 2) Update distance text
         float dist = dir.magnitude;
         distanceText.text = $"{dist:0.#} m";
     }
